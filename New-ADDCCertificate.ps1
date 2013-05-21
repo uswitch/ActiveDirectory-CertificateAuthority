@@ -44,12 +44,14 @@
     If specified, the script will output the certificate to the file path.
 
 .PARAMETER Submit
-    Submit automatically to the CA.
+    Submit automatically to the CA, and install the resultant certificate if enrollment without manager approval
+    is on.
 
 .EXAMPLE
    
-    .\New-ADDCCertificate.ps1 -Template AdvDomainControllerAuthentication -LBIpAddresses @("10.10.10.1","10.10.10.2") -LBDNSNames @("ldap-ad.local") \
-     -Organization "Contoso" -Street "1 Redmond Drive" -Locality "Seattle" -Country US -ReqOut dc1.csr -CertOut dc1.crt -Submit
+    .\New-ADDCCertificate.ps1 -Template AdvDomainControllerAuthentication -LBIpAddresses @("10.10.10.1","10.10.10.2")\
+    -LBDNSNames @("ldap-ad.local") -Organization "Contoso" -Street "1 Redmond Drive" -Locality "Seattle" \
+    -Country US -ReqOut dc1.csr -CertOut dc1.crt -Submit
 
 .NOTES
 	Naadir Jeewa (2013)
@@ -238,9 +240,8 @@ if([CERTCliLib.CertDisposition]::Issued -ne $disposition)
     $dispositionMessage = $CertRequest.GetDispositionMessage()
     if ([CERTCliLib.CertDisposition]::UnderSubmission -eq $disposition)
     {
-        write-host Submission is pending
+        write-host Submission is pending. Contact the CA manager for details.
         write-host $dispositionMessage
-        Read-Host Press enter when authorised
     }
     else
     {

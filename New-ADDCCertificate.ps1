@@ -38,10 +38,10 @@
     X509 Country Attribute
 
 .PARAMETER ReqOut
-    If specified, the script will about the CSR to the file path.
+    If specified, the script will output the CSR to the file path.
 
 .PARAMETER CertOut
-    If specified, the script will about the certificate to the file path.
+    If specified, the script will output the certificate to the file path.
 
 .PARAMETER Submit
     Submit automatically to the CA.
@@ -249,18 +249,18 @@ if([CERTCliLib.CertDisposition]::Issued -ne $disposition)
 
     }
 }
-
-# If the certificate is ready, get it
-$cert = $CertRequest.GetCertificate([CERTCliLib.CertOutput]::Base64 -xor [CERTCliLib.CertOutput]::Chain)
-
-# Output the certificate to file if needed
-if ($certout)
+else
 {
-    $cert | Out-File -FilePath $certout -Encoding ascii
-}
-
-$enroll = new-object -ComObject X509Enrollment.CX509Enrollment
-$enroll.Initialize([CERTENROLLLib.X509CertificateEnrollmentContext]::ContextAdministratorForceMachine)
-$enroll.InstallResponse([CERTENROLLLib.InstallResponseRestrictionFlags]::AllowUntrustedRoot,$cert,[CERTENROLLLib.EncodingType]::XCN_CRYPT_STRING_BASE64HEADER,$null)
-
+    # If the certificate is ready, get it
+    $cert = $CertRequest.GetCertificate([CERTCliLib.CertOutput]::Base64 -xor [CERTCliLib.CertOutput]::Chain)
+	
+    # Output the certificate to file if needed
+    if ($certout)
+    {
+        $cert | Out-File -FilePath $certout -Encoding ascii
+    }
+	
+    $enroll = new-object -ComObject X509Enrollment.CX509Enrollment
+    $enroll.Initialize([CERTENROLLLib.X509CertificateEnrollmentContext]::ContextAdministratorForceMachine)
+    $enroll.InstallResponse([CERTENROLLLib.InstallResponseRestrictionFlags]::AllowUntrustedRoot,$cert,[CERTENROLLLib.EncodingType]::XCN_CRYPT_STRING_BASE64HEADER,$null)
 }
